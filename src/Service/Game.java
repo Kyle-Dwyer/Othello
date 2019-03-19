@@ -2,10 +2,13 @@ package Service;
 
 import Core.Othello;
 import Util.FileUtil;
+import constant.FileConstant;
 import constant.InfoConstant;
 import jxl.write.WriteException;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Game {
@@ -117,7 +120,7 @@ public class Game {
     private void printComputerMove() {
         int[] position = othello.getComputerStep();
         System.out.print(playerColor ? InfoConstant.COMP_WHITE_PLACE : InfoConstant.COMP_BLACK_PLACE);
-        System.out.println((char) (position[0] + 'a') + (char) (position[1] + 'a'));
+        System.out.println("" + (char) (position[0] + 'a') + (char) (position[1] + 'a'));
     }
 
     private void printChessBoard() {
@@ -171,21 +174,24 @@ public class Game {
         System.out.print(color ? InfoConstant.BLACK_NO_VALID : InfoConstant.WHITE_NO_VALID);
     }
 
-    public int getDimension() {
-        return dimension;
-    }
-
-    public long getGameTime() {
-        return gameTime;
-    }
-
-    public boolean getPlayerColor() {
-        return playerColor;
-    }
-
     /*记录日志*/
     public void log() throws WriteException, IOException {
-        FileUtil.createXl();
-        FileUtil.editXl(this);
+        String[] data = new String[6];
+        data[0] = getTime();
+        data[1] = "" + (gameTime / 1000);
+        data[2] = "" + dimension + "*" + dimension;
+        data[3] = playerColor ? "human" : "computer";
+        data[4] = !playerColor ? "human" : "computer";
+        data[5] = wrongStep ? InfoConstant.HUMAN_GAVE_UP : checkScore();
+        FileUtil.write(data, FileConstant.DATA_PATH);
+//        FileUtil.createXl();
+//        FileUtil.editXl(this);
+    }
+
+    private static String getTime() {
+        long l = System.currentTimeMillis();
+        Date date = new Date(l);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd HH:mm:ss");
+        return dateFormat.format(date);
     }
 }
